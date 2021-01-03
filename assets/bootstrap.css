@@ -10262,3 +10262,20 @@ a.text-dark:hover, a.text-dark:focus {
   }
 }
 /*# sourceMappingURL=bootstrap.css.map */
+
+
+.printerWindow .printerWindow--one {
+
+  overflow:hidden;
+  border: transparent;
+}
+
+.investingWindow--one {
+
+  overflow:hidden;
+  border: transparent;
+  border-radius: 10 px;
+  height:auto;
+  width: auto;
+
+}

@@ -1,0 +1,2 @@
+bridgeIP: 192.168.39.198
+userID: bmTAb-As2kKB1a5Xug53fa9IijvpwpmIW52l8Wto

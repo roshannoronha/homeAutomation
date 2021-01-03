@@ -1,23 +1,59 @@
 import dash
+from dash_bootstrap_components._components.CardBody import CardBody
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
+from dash_html_components.Center import Center
+from dash_html_components.Div import Div
 import plotly.express as px
 import plotly.io as pio
 import pandas as pd
 import dash_table
+from pathlib import Path
 
-from categories.lights import getBridge, setBrightness, setColor
-from categories.googleCalendar import getCalendarEvents
+from categories.lighting.lights import getBridge, setBrightness, setColor
+from categories.calendar.googleCalendar import getCalendarEvents
 
 
 b, groupNums = getBridge()
 #currentColor = getCurrentColor()
-calendarData = getCalendarEvents("D:\\Documents\\homeAutomation\\categories\\calendar\\calendarInfo.txt")
+calendarData = getCalendarEvents(Path("C:\\homeAutomation\\categories\\calendar\\calendarInfo.txt"))
 
 external_stylesheets = ["bootstrap.css"]
 
 app = dash.Dash(__name__, external_stylesheets= external_stylesheets)
+
+investingCard = dbc.Card(color = 'dark', inverse = True, children = [
+
+    dbc.CardBody([
+
+        html.H4('INVESTING'),
+
+        html.Center(children = [
+
+            html.Div(children = [
+                html.Iframe(id = 'investingWindow', className = "investingWindow--one", src= "https://app.wealthica.com/addons/wealthica/wealthica-balance-sheet-addon", height = 1000, width = 1000),
+            ])
+        ]),
+    ])  
+])
+
+threeDPrinterCard = dbc.Card(color= 'dark', inverse= True, children=[
+
+    dbc.CardBody([
+
+        html.H4('3D PRINTERS'),
+
+        html.Center(children = [
+
+            html.Div(children = [
+                html.H5('Ultimaker-2214b7'),
+                html.Iframe(id = 'printerOne', className = "printerWindow--one", src= "http://192.168.128.188:8080/?action=stream", height = 604, width = 804),
+            ]),
+        ]),
+    ]),  
+    
+])
 
 lightingCard = dbc.Card(color= 'dark', inverse= True, children=[
 
@@ -57,7 +93,7 @@ lightingCard = dbc.Card(color= 'dark', inverse= True, children=[
         ),
 
         html.Div(id='color-output-container'),
-    ])
+    ]),
 ])
 
 calendarCard = dbc.Card(color= 'dark', inverse= True, children=[
@@ -88,12 +124,14 @@ calendarCard = dbc.Card(color= 'dark', inverse= True, children=[
         ),
 
         html.Div(id='calendar-container'),
-    ])
+    ]),
 ])
 
 app.layout = html.Div([
     dbc.Row(dbc.Col(lightingCard, width= {'size': 10, 'offset': 1}, style={'padding': 20})),
-    dbc.Row(dbc.Col(calendarCard, width= {'size': 10, 'offset': 1}, style={'padding': 20}))
+    dbc.Row(dbc.Col(calendarCard, width= {'size': 10, 'offset': 1}, style={'padding': 20})),
+    dbc.Row(dbc.Col(threeDPrinterCard, width= {'size': 10, 'offset': 1}, style={'padding': 20})),
+    dbc.Row(dbc.Col(investingCard, width= {'size': 10, 'offset': 1}, style={'padding': 20}))
 ])
 
 @app.callback(dash.dependencies.Output('light-output-container', 'children'), [dash.dependencies.Input('lightSlider', 'value')])

@@ -25,7 +25,7 @@ def authorize():
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                'categories/credentials.json', SCOPES)
+                'categories/calendar/credentials.json', SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
         with open('token.pickle', 'wb') as token:
@@ -74,9 +74,10 @@ def storeCalendarData(filePath):
     for event in eventsInfo:
         #start = event['start'].get('date', event['start'].get('date'))
         eventDateTime = event['start'].get('dateTime')
-        eventDate = eventDateTime[0:10]
-        eventName = event['summary']
-        eventsTable = eventsTable.append({"Date":eventDate, "Event": eventName}, ignore_index=True)
+        if eventDateTime != None:
+            eventDate = eventDateTime[0:10]
+            eventName = event['summary']
+            eventsTable = eventsTable.append({"Date":eventDate, "Event": eventName}, ignore_index=True)
 
     
     writeCalendarToFile(eventsTable, filePath)
@@ -86,7 +87,6 @@ def getCalendarEvents(filePath):
     eventsDataframe = pd.read_table(filePath, names= ["Date", "Event"], sep = "\t")
 
     return eventsDataframe 
-
 
 
 

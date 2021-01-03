@@ -4,7 +4,7 @@ from pathlib import Path
 
 def getHueInfo():
 
-    filePath = Path("D:\\Documents\\homeAutomation\\categories\\lighting\\hueInfo.txt")
+    filePath = Path("C:\\homeAutomation\\categories\\lighting\\hueInfo.txt")
 
     f = open(filePath, "r")
     data = f.readlines()
@@ -60,7 +60,6 @@ def setColor(bridge, groupNums, colorValue):
         bridge.groups[num].action(ct=colorValue)
 
 
-getHueInfo()
 
 
 
