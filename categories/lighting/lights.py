@@ -59,6 +59,25 @@ def setColor(bridge, groupNums, colorValue):
     for num in groupNums:
         bridge.groups[num].action(ct=colorValue)
 
+def getCurrentColor(bridge, groupNums):
+
+    '''Returns the current color value'''
+    currentColor = ""
+    for num in groupNums:
+        currentColor = bridge.groups[num]()['action']['ct']
+
+    return currentColor
+
+def getCurrentBrightness(bridge, groupNums):
+
+    '''Returns the current brightness value'''
+    currentBri = ""
+    for num in groupNums:
+        currentBri = bridge.groups[num]()['action']['bri']
+
+    return currentBri
+
+
 
 
 

@@ -1,9 +1,10 @@
-2021-01-04 	 [Virtual] AbCellera Book Club 
-2021-01-04 	 Automation scrum 
-2021-01-04 	 Binding users weekly meeting 
-2021-01-07 	 Automation Focused Morning 
-2021-01-07 	 Automation scrum 
-2021-01-07 	 Eng Chitty Chat 
-2021-01-07 	 Lab automation weekly meeting 
-2021-01-08 	 Cell screening meeting 
-2021-01-08 	 Team rep meeting 
+2021-01-26 	 SLAS with Thermo - Configurable automation 
+2021-01-26 	 Hold for Echo Integration with ThermoCRS 
+2021-01-26 	 [SERIES ON HOLD] Data Management Working Group Meeting 
+2021-01-26 	 HighRes Storage Devices 
+2021-01-26 	 BOND and Beyond 
+2021-01-27 	 The making of the Trianni Mouse Mini-101  
+2021-01-27 	 SLAS with Thermo - Software 
+2021-01-27 	 MolEx Purification (Production) Meeting 
+2021-01-28 	 Automation Focused Morning 
+2021-01-28 	 Automation scrum 

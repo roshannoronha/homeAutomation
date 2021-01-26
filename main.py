@@ -1,11 +1,20 @@
 from categories.calendar.googleCalendar import storeCalendarData
+from categories.investing.investing import updateCurrentFinancialInfo
 from pathlib import Path
 import os
+import webbrowser
 
-#get calendar data
+
+print('FETCHING CALENDAR DATA')
 filePath = Path("C:\homeAutomation\categories\calendar\calendarInfo.txt")
 storeCalendarData(filePath)
 
+print('FETCHING FINANCIAL INFORMATION')
+updateCurrentFinancialInfo()
+
 #start dashboard
-#dashboardPath = Path("D:/Documents/homeAutomation/dashboard.py")
-#os.system(f'python {dashboardPath}')
+dashboardPath = Path("C:\\homeAutomation\\dashboard.py")
+webbrowser.open('http://127.0.0.1:8050/')
+os.system(f'python {dashboardPath}')
+
+

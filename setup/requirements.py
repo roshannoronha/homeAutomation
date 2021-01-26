@@ -4,3 +4,7 @@ plotly
 pandas
 dash
 dash-bootstrap-components
+selenium
+forex-python
+yfinance
+forex_python

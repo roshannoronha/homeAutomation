@@ -11,38 +11,46 @@ import pandas as pd
 import dash_table
 from pathlib import Path
 
-from categories.lighting.lights import getBridge, setBrightness, setColor
+from categories.lighting.lights import getBridge, setBrightness, setColor, getCurrentColor, getCurrentBrightness
 from categories.calendar.googleCalendar import getCalendarEvents
+from categories.investing.investing import getCurrentFinancialInfo, stockDataViz, networthHistoryViz
 
 
 b, groupNums = getBridge()
 #currentColor = getCurrentColor()
 calendarData = getCalendarEvents(Path("C:\\homeAutomation\\categories\\calendar\\calendarInfo.txt"))
+overview, holdings = getCurrentFinancialInfo()
 
-external_stylesheets = ["bootstrap.css"]
 
-app = dash.Dash(__name__, external_stylesheets= external_stylesheets)
+app = dash.Dash(__name__, external_stylesheets= ["bootstrap.css"])
 
-investingCard = dbc.Card(color = 'dark', inverse = True, children = [
+# investingCard = html.Div([
+    
+#     dbc.CardGroup([
+
+#         dbc.Card(color = 'dark', inverse = True, children = [
+
+#             dbc.CardBody([
+
+#                 html.H4('CURRENT NETWORTH'),
+#                 html.H5(currentNetworth),
+#             ]),
+#         ]),
+
+#         dbc.Card(color = 'dark', inverse = True, children = [
+
+#             dbc.CardBody([
+
+#                 html.H4('CURRENT NETWORTH'),
+#                 html.H5(currentNetworth),
+#             ]),
+#         ]),
+#     ])
+# ])
+
+printerOne = dbc.Card(color= 'dark', inverse= True, children=[
 
     dbc.CardBody([
-
-        html.H4('INVESTING'),
-
-        html.Center(children = [
-
-            html.Div(children = [
-                html.Iframe(id = 'investingWindow', className = "investingWindow--one", src= "https://app.wealthica.com/addons/wealthica/wealthica-balance-sheet-addon", height = 1000, width = 1000),
-            ])
-        ]),
-    ])  
-])
-
-threeDPrinterCard = dbc.Card(color= 'dark', inverse= True, children=[
-
-    dbc.CardBody([
-
-        html.H4('3D PRINTERS'),
 
         html.Center(children = [
 
@@ -51,9 +59,22 @@ threeDPrinterCard = dbc.Card(color= 'dark', inverse= True, children=[
                 html.Iframe(id = 'printerOne', className = "printerWindow--one", src= "http://192.168.128.188:8080/?action=stream", height = 604, width = 804),
             ]),
         ]),
-    ]),  
-    
-])
+    ]),
+]),
+
+printerTwo = dbc.Card(color= 'dark', inverse= True, children=[
+
+    dbc.CardBody([
+
+        html.Center(children = [
+
+            html.Div(children = [
+                html.H5('Ultimaker-22a1d8'),
+                html.Iframe(id = 'printerTwo', className = "printerWindow--one", src= "http://192.168.128.175:8080/?action=stream", height = 604, width = 804),
+            ]),
+        ]),
+    ]),
+]),    
 
 lightingCard = dbc.Card(color= 'dark', inverse= True, children=[
 
@@ -71,7 +92,10 @@ lightingCard = dbc.Card(color= 'dark', inverse= True, children=[
                 50: "50%",
                 75: "75%",
                 100: "100%",
-            }
+            },
+
+            #sets the slider to the current brightness of the bulbs
+            value= 0
         ),
 
         html.Div(id='light-output-container'),
@@ -89,7 +113,9 @@ lightingCard = dbc.Card(color= 'dark', inverse= True, children=[
                 381: "INCANDESCENT",
                 500: "CANDLELIGHT",
             },
-            #value= currentColor,
+
+            #sets to slider to the current color of the bulbs
+            value= getCurrentColor(b, groupNums),
         ),
 
         html.Div(id='color-output-container'),
@@ -113,26 +139,164 @@ calendarCard = dbc.Card(color= 'dark', inverse= True, children=[
                 'backgroundColor': 'rgba(0,0,0,0)',
                 'fontWeight': 'bold',
                 'border': '1 px',
-                'display': 'none',
+                #'display': 'none',
             },
 
             style_cell = {
                 'backgroundColor': 'rgba(0,0,0,0)',
                 'color': 'white',
-                'textAlign': 'center'
+                'textAlign': 'center',
+                'fontSize': 20,
+                #'font-family': '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
             },
+
+            style_data_conditional = [
+                {
+                    'if': {
+                        'state': 'active'
+                    },
+
+                    'backgroundColor': 'transparent',
+                    'border-top': '1px solid rgb(211, 211, 211)',
+                    'border-bottom': '1px solid rgb(211, 211, 211)',
+                }
+            ],  
         ),
 
         html.Div(id='calendar-container'),
     ]),
 ])
 
+tabs_styles = {
+    'height': '70px',
+    'font-size': '20px',
+}
+
+tab_style = {
+    'backgroundColor': 'rgba(0,0,0,0.1)',
+    'color': 'white',
+    'borderTop': 'none',
+    'borderBottom': 'none',
+    'padding': '15px',
+    'borderTop': 'none',
+    'borderLeft': '4px solid #d6d6d6',
+    'borderRight': '4px solid #d6d6d6',
+    'border-color': 'rgba(0,0,0,0)',
+
+}
+
+tab_selected_style = {
+    'borderTop': 'none',
+    'borderLeft': '4px solid #d6d6d6',
+    'borderRight': '4px solid #d6d6d6',
+    'borderBottom': 'none',
+    'backgroundColor': 'rgba(0,0,0,0.5)',
+    'color': 'white',
+    'padding': '15px',
+    'fontWeight': 'bold',
+    'border-color': 'rgba(0,0,0,0)',
+}
+
 app.layout = html.Div([
-    dbc.Row(dbc.Col(lightingCard, width= {'size': 10, 'offset': 1}, style={'padding': 20})),
-    dbc.Row(dbc.Col(calendarCard, width= {'size': 10, 'offset': 1}, style={'padding': 20})),
-    dbc.Row(dbc.Col(threeDPrinterCard, width= {'size': 10, 'offset': 1}, style={'padding': 20})),
-    dbc.Row(dbc.Col(investingCard, width= {'size': 10, 'offset': 1}, style={'padding': 20}))
+    dcc.Tabs(id='navTabs', value='investing', children=[
+        dcc.Tab(label='DASHBOARD', value='dashboard', style=tab_style, selected_style=tab_selected_style),
+        dcc.Tab(label='INVESTING', value='investing', style=tab_style, selected_style=tab_selected_style),
+        dcc.Tab(label='3D PRINTERS', value='printers', style=tab_style, selected_style=tab_selected_style),
+        dcc.Tab(label='GAMING', value='gaming', style=tab_style, selected_style=tab_selected_style),
+
+    ], style=tabs_styles),
+    
+    html.Div(id='tabs'),
+
 ])
+
+@app.callback(dash.dependencies.Output('tabs', 'children'), dash.dependencies.Input('navTabs', 'value'))
+def displayContent(navTabs):
+
+    if navTabs == 'dashboard':
+
+        return html.Div([
+            dbc.Row(dbc.Col(lightingCard, width= {'size': 10, 'offset': 1}, style={'padding': 40})),
+            dbc.Row(dbc.Col(calendarCard, width= {'size': 10, 'offset': 1}, style={'padding': 40})),
+        ])
+    
+    elif navTabs == 'investing':
+
+        #overview should be networth + wealthica data
+        overviewCards = []
+        for item in overview.keys():
+            overviewCards.append(dbc.Card(color = 'dark', inverse = True, children = [
+                dbc.CardBody([
+                    html.Center(html.H3(item.upper())),
+                    html.Center(
+                        html.Listing([
+                            html.H4(overview[item], style= {'font-size': '40px'}),
+                        ]),
+                    ),
+                ]),
+            ]))
+        
+        holdingCards = []
+        for item in holdings.keys():
+            
+            moreKeys = isinstance(holdings[item], str)
+            
+            accountInfo = []
+
+            if moreKeys == False:
+                for account in holdings[item].keys():
+                    accountInfo.append(html.U(html.H4(account))),
+                    accountInfo.append(html.H5(holdings[item][account]))
+            
+                holdingCards.append(dbc.Card(color = 'dark', inverse = True, children = [
+                    dbc.CardBody([
+                        html.Center(html.H3(item.upper())),
+                        html.Listing(accountInfo),
+                    ])
+                ]))
+            
+            else:
+                holdingCards.append(dbc.Card(color = 'dark', inverse = True, children = [
+                    dbc.CardBody([
+                        html.Center(html.H3(item.upper())),
+                        html.Listing([
+                            html.U(html.H4("Current Value")),
+                            html.H5(holdings[item]),
+                        ]),
+                    ]),
+                ]))
+        
+        stockInfoCard = dbc.Card(color = 'dark', inverse = True, children = [
+            dbc.CardBody([
+                dcc.Graph(figure = stockDataViz(), config = {'displayModeBar': False})
+            ]),
+        ])
+
+        networthHistoryCard = dbc.Card(color = 'dark', inverse = True, children = [
+            dbc.CardBody([
+                dcc.Graph(figure = networthHistoryViz(), config = {'displayModeBar': False})
+            ]),
+        ])
+
+        return html.Div([
+
+            dbc.Row(dbc.Col(dbc.CardDeck(overviewCards), style={'padding': 40})),
+            dbc.Row(dbc.Col(dbc.CardDeck(networthHistoryCard), style={'padding': 40})),       
+            dbc.Row(dbc.Col(dbc.CardDeck(holdingCards), style={'padding': 40})),
+            dbc.Row(dbc.Col(stockInfoCard, style={'padding': 40}))
+        ])
+
+    
+    elif navTabs == 'printers':
+        return html.Div([
+            dbc.Row([
+                dbc.Col(printerOne, width= {'size': 6}, style={'padding': 40}),
+                dbc.Col(printerTwo, width= {'size': 6}, style={'padding': 40}),
+            ])
+        ])
+
+    #elif navTabs == 'gaming':
+
 
 @app.callback(dash.dependencies.Output('light-output-container', 'children'), [dash.dependencies.Input('lightSlider', 'value')])
 def update_light(value):
